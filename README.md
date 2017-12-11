@@ -6,3 +6,8 @@ Overview of the process:-
 - Take a name and its category (boy or girl)
 - Convert it to tace16 encoding. It is possible to use unicode directly, but tace16 seemed more natural.
 - Run the RNN over the name, letter by letter so as to make the network learn what letters can occur together. 
+
+
+
+Non obvious requisites:=
+[TACE-Unicode converter](https://github.com/vanangamudi/tace16-utf8-converter)

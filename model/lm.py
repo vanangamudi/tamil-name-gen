@@ -18,7 +18,7 @@ from functools import partial
 
 
 import numpy as np
-
+import tamil
 import torch
 from torch import nn, optim
 from torch.nn import functional as F
@@ -216,7 +216,7 @@ class LM(Base):
 
         self.__build_stats__()
                         
-        self.best_model_criteria = self.test_loss
+        self.best_model_criteria = self.train_loss
         if config.CONFIG.cuda:
              self.cuda()
 
@@ -263,13 +263,14 @@ class LM(Base):
                     input_ = feed.next_batch()
                     idxs, (gender, sequence), targets = input_
                     sequence = sequence.transpose(0,1)
-                    _, batch_size = sequence.size()
+                    seq_size, batch_size = sequence.size()
 
                     state = self.initial_hidden(batch_size)
                     loss = 0
                     output = sequence[0]
+                    positions = LongVar(self.config, np.linspace(0, 1, seq_size))
                     for ti in range(1, sequence.size(0) - 1):
-                        output = self.forward(gender, ti, output, state)
+                        output = self.forward(gender, positions[ti], output, state)
                         loss += self.loss_function(ti, output, input_)
                         output, state = output
 
@@ -310,15 +311,16 @@ class LM(Base):
                 input_ = self.test_feed.next_batch()
                 idxs, (gender, sequence), targets = input_
                 sequence = sequence.transpose(0,1)
-                _, batch_size = sequence.size()
+                seq_size, batch_size = sequence.size()
 
                 state = self.initial_hidden(batch_size)
                 loss, accuracy = Var(self.config, [0]), Var(self.config, [0])
                 output = sequence[0]
                 outputs = []
                 ti = 0
+                positions = LongVar(self.config, np.linspace(0, 1, seq_size))
                 for ti in range(1, sequence.size(0) - 1):
-                    output = self.forward(gender, ti, output, state)
+                    output = self.forward(gender, positions[ti], output, state)
                     loss += self.loss_function(ti, output, input_)
                     accuracy += self.accuracy_function(ti, output, input_)
                     output, state = output
@@ -358,27 +360,33 @@ class LM(Base):
                 random.randint(0, self.train_feed.size - 10),
                 1
             )
-            
-        idxs, (gender, sequence), targets = input_
-        sequence = sequence.transpose(0,1)
-        _, batch_size = sequence.size()
-        
-        state = self.initial_hidden(batch_size)
-        loss = 0
-        output = sequence[1]
-        outputs = []
-        for ti in range(length - 1):
-            outputs.append(output)
-            output = self.forward(gender, ti, output, state)
-            output, state = output
-            output = output.topk(beam_width)[1]
-            index = random.randint(0, beam_width-1)
-            output = output[:, index]
+        try:
+            idxs, (gender, sequence), targets = input_
+            sequence = sequence.transpose(0,1)
+            seq_size, batch_size = sequence.size()
 
-        outputs = torch.stack(outputs).transpose(0,1)
-        for i in range(outputs.size(0)):
+            state = self.initial_hidden(batch_size)
+            loss = 0
+            output = sequence[1]
+            outputs = []
+            positions = LongVar(self.config, np.linspace(0, 1, length))
+            for ti in range(length - 1):
+                outputs.append(output)
+                output = self.forward(gender, positions[ti], output, state)
+                output, state = output
+                output = output.topk(beam_width)[1]
+                index = random.randint(0, beam_width-1)
+                output = output[:, index]
 
-            s = [self.dataset.input_vocab[outputs[i][j]] for j in range(outputs.size(1))]
-            print(self.dataset.gender_vocab[gender.item()], ''.join(s), length, beam_width)
-            
-        return True
+            outputs = torch.stack(outputs).transpose(0,1)
+            for i in range(outputs.size(0)):
+
+                s = [self.dataset.input_vocab[outputs[i][j]] for j in range(outputs.size(1))]
+                name = ''.join(s)
+                name =  ''.join([i for i in name if ord(i) >= 0x0B80 and ord(i) <= 0x0BFF])
+                print(self.dataset.gender_vocab[gender.item()], name, length, beam_width)
+
+            return True
+        except:
+            self.log.exception('PREDICTION')
+            print(locals())

@@ -9,8 +9,8 @@ class Base(metaclass=ConfigMeta):
 
 class CONFIG(Base):
     dataset = 'names_'
-    dataset_path = '../dataset/'
-    lm_dataset_path = '../dataset/lm_lengthsorted.txt'
+    dataset_path = '../raw_dataset/tamil-names'
+    lm_dataset_path = '../raw_dataset/lm_lengthsorted.txt'
     lm_samples_count = 1000000
     trainset_size = 1.0
     max_story_len = 0
@@ -19,7 +19,7 @@ class CONFIG(Base):
     num_layers = 1
     
 
-    pretrain_count, train_count = 1, 5
+    pretrain_count, train_count = 1, 50
     LR = 0.001
     MOMENTUM=0.1
     ACTIVATION = 'softmax'

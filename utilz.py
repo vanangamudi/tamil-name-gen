@@ -76,7 +76,7 @@ class NameDataset(Dataset):
         self.pretrainset = pretrain_samples
 
 def load_data(config,
-              dirname='../dataset/',
+              dirname='../raw_dataset/tamil-names',
               max_sample_size=None):
 
 
@@ -116,7 +116,7 @@ def load_data(config,
     #########################################################
     # Read tamil words
     #########################################################
-    def read_words(filename='../dataset/lm_lengthsorted.txt'):
+    def read_words(filename=config.HPCONFIG.lm_dataset_path):
         samples = []
         for line in tqdm(open(filename).readlines()[:config.HPCONFIG.lm_samples_count],
                          'reading lm file for words'):

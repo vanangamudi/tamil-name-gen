@@ -226,7 +226,7 @@ def batchop(datapoints, VOCAB, GENDER, config, *args, **kwargs):
     for d in datapoints:
         sequence.append([VOCAB['GO']]
                         + [VOCAB[w] for w in d.sequence]
-                        #+ [VOCAB['EOS']]
+                        + [VOCAB['EOS']]
         )
         gender.append(GENDER[d.gender])
 

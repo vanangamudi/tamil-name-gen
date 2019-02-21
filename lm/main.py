@@ -64,6 +64,10 @@ if __name__ == '__main__':
                         help='path to the hyperparameters config file',
                         default='hpconfig.py', dest='hpconfig')
     
+    parser.add_argument('-b','--base-hpconfig',
+                        help='path to the base hyperparameters config file',
+                        default=None, dest='base_hpconfig')
+        
     parser.add_argument('-d', '--prefix-dir',
                         help='path to the results',
                         default='run00', dest='prefix_dir')

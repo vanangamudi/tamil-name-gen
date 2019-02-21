@@ -24,7 +24,7 @@ import torch
 from anikattu.utilz import initialize_task, tqdm
 
 from model.lm import LM
-from utilz import load_data, batchop, loss, portion
+from utilz import load_data, batchop, loss, portion, Sample
 
 import importlib
 
@@ -96,12 +96,16 @@ if __name__ == '__main__':
                                 in inputs with best model from last training run''')
 
     predict_parser.add_argument('--predict', default='predict', dest='task')
+    predict_parser.add_argument('-u', '--uniqueness', default=50,  dest='beam_width', type=int)
+    predict_parser.add_argument('-c', '--count',  default=10, dest='count', type=int)
+    predict_parser.add_argument('-l', '--length', default=10, dest='prediction_length', type=int)
+    predict_parser.add_argument('-g', '--gender', default='girl', dest='gender')
+    predict_parser.add_argument('-s', '--starting-char', default=None, dest='starting_char')
+    
     predict_parser.add_argument('--over-test-feed', action='store_true', dest='over_test_feed')
-    predict_parser.add_argument('--length', default=10, dest='prediction_length')
-
     predict_parser.add_argument('--show-plot', action='store_true', dest='show_plot')
     predict_parser.add_argument('--save-plot', action='store_true',  dest='save_plot')
-    predict_parser.add_argument('--uniqueness', default=50,  dest='beam_width')
+
 
     args = parser.parse_args()
     print(args)
@@ -112,7 +116,7 @@ if __name__ == '__main__':
     ########################################################################################
     # anikattu initialization for directory structure and so on
     ########################################################################################
-    ROOT_DIR = initialize_task(args.hpconfig, args.prefix_dir)
+    ROOT_DIR = initialize_task(args.hpconfig, args.prefix_dir, base_hpconfig=args.base_hpconfig)
 
     sys.path.append('.')
     print(sys.path)
@@ -187,9 +191,18 @@ if __name__ == '__main__':
 
 
     if args.task == 'predict':
-        for i in range(10):
+        if args.starting_char:
+            datapoints = [Sample(0, args.gender, [args.starting_char])]
+            input_ = _batchop(datapoints)
+        else:
+            input_ = None
+            
+        for i in range(args.count):
             try:
-                output = model.do_predict(length=int(args.prediction_length), beam_width=int(args.beam_width))
+                
+                output = model.do_predict(input_,
+                                          length=args.prediction_length,
+                                          beam_width=args.beam_width)
             except:
                 log.exception('#########3')
                 pass

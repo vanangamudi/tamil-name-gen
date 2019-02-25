@@ -10,6 +10,8 @@ logging.basicConfig(format="%(levelname)-8s:%(filename)s.%(funcName)20 >>   %(me
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
 
+import random
+
 import torch
 from torch import nn, optim
 from torch.autograd import Variable
@@ -206,8 +208,8 @@ def load_data(config,
     pivot = int(len(samples) * config.CONFIG.split_ratio)
     train_samples, test_samples = samples[:pivot], samples[pivot:]
 
-    train_samples = sorted(train_samples, key=lambda x: len(x.sequence), reverse=True)
-    test_samples = sorted(test_samples, key=lambda x: len(x.sequence), reverse=True)
+    train_samples = sorted(train_samples, key=lambda x: len(x.in_sequence), reverse=True)
+    test_samples = sorted(test_samples, key=lambda x: len(x.in_sequence), reverse=True)
     
     return NameDataset('names',
                        (train_samples, test_samples),
@@ -239,7 +241,9 @@ def batchop(datapoints, VOCAB, GENDER, config, for_prediction=False, *args, **kw
     gender = LongVar(config, gender)
     in_sequence    = LongVar(config, pad_seq(in_sequence)).transpose(0, 1)
     out_sequence    = LongVar(config, pad_seq(out_sequence)).transpose(0, 1)
-        
+
+
+    #print(list(i.size() for i in [gender, in_sequence, out_sequence]))
     batch = indices, (gender, in_sequence), (out_sequence)
     
         

@@ -31,6 +31,7 @@ class Base(nn.Module):
     def __init__(self, config, name):
         super(Base, self).__init__()
         self._name = name
+        self.config =  config
         self.log = logging.getLogger(self._name)
         size_log_name = '{}.{}'.format(self._name, 'size')
         self.log.info('constructing logger: {}'.format(size_log_name))

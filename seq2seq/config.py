@@ -12,13 +12,13 @@ class Base(metaclass=ConfigMeta):
     pass
 
 class CONFIG(Base):
-    split_ratio = 0.9
+    split_ratio = 0.99
     dropout = 0.1
     cuda = True
     multi_gpu = False
     tqdm = True
-    flush =   False
-    batch_size = 300
+    flush = True
+    batch_size = 1000
     plot_metrics = False
 
 

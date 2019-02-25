@@ -14,12 +14,12 @@ class CONFIG(Base):
     lm_samples_count = 1000000
     trainset_size = 1.0
     max_story_len = 0
-    hidden_size = 50
-    embed_size = 50
+    hidden_dim = 100
+    embed_dim = 100
     num_layers = 1
     
 
-    pretrain_count, train_count = 1, 10
+    pretrain_count, train_count = 1, 5
     LR = 0.001
     MOMENTUM=0.1
     ACTIVATION = 'softmax'

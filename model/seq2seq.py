@@ -232,9 +232,9 @@ class Seq2SeqModel(Base):
                     output = self.__(output.max(1)[1], 'output')
                     outputs.append(output)
                     
-                losses.append(loss)
-                accuracies.append(accuracy)
-                
+                losses.append(loss.detach())
+                accuracies.append(accuracy.detach())
+
             epoch_loss = torch.stack(losses).mean() / target_size
             epoch_accuracy = torch.stack(accuracies).mean() / target_size
             self.test_loss.append(epoch_loss.data.item())

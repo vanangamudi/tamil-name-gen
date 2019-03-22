@@ -19,7 +19,7 @@ class CONFIG(Base):
     num_layers = 1
     
 
-    pretrain_count, train_count = 1, 5
+    pretrain_count, train_count = 1, 15
     LR = 0.001
     MOMENTUM=0.1
     ACTIVATION = 'softmax'

@@ -186,9 +186,9 @@ class Seq2SeqModel(Base):
                 
             for i in range(config.HPCONFIG.train_count):
                 loss = train_on_feed(self.train_feed)
+                self.log.info('-- {} -- loss: {}\n'.format(epoch, loss.item()))
                 
             self.train_loss.append(loss.data.item())                
-            self.log.info('-- {} -- loss: {}\n'.format(epoch, self.train_loss))
             self.log.info('-- {} -- best loss: {}\n'.format(epoch, self.best_model[0]))
             
             for m in self.metrics:

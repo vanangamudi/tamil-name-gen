@@ -17,6 +17,7 @@ import sys
 
 import tamil
 
+
 from torch import nn, optim
 from torch.nn import functional as F
 from torch.autograd import Variable
@@ -207,7 +208,7 @@ if __name__ == '__main__':
                 log.exception('#########3')
                 pass
                 
-        for i in range(10):                
+        for i in range(args.count):                
             predict(config, args.gender, args.template, args.teacher_force)
                 
     end = time.time()
